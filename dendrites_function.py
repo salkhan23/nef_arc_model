@@ -97,10 +97,10 @@ class Layer4:
 
         # Scale factors are also between 0, 1 so use another set of eval points to improve soma
         # representation
-        pnts_d0 = np.random.uniform(0, 1, size=1000)
-        pnts_d1 = np.random.uniform(-1, 1, size=1000)
-
-        eval_points2 = np.vstack([pnts_d0, pnts_d1]).T
+        # TODO: Figure out why these eval points doesnt improve representation
+        # pnts_d0 = np.random.uniform(0, 1, size=1000)
+        # pnts_d1 = np.random.uniform(-1, 1, size=1000)
+        # eval_points2 = np.vstack([pnts_d0, pnts_d1]).T
 
         # Connections ------------------------------------------------
         nengo.Connection(sf_node, self.dend_rout[0], transform=i, synapse=t_psc)
@@ -111,7 +111,7 @@ class Layer4:
                          function=self.routing_function, synapse=t_psc)
         nengo.Connection(x_j_hat_node, self.dend[1], synapse=t_psc)
 
-        nengo.Connection(self.dend, self.soma, synapse=t_psc, #eval_points=eval_points2,
+        nengo.Connection(self.dend, self.soma, synapse=t_psc,  # eval_points=eval_points2,
                          function=self.scaled_dend_out)
 
         # Probes --------------------------------------------------------------
@@ -127,6 +127,132 @@ class Layer4:
         if sigma_att > 0:
             scale_factor = np.exp(-(mu_i - self.j)**2 / (2 * sigma_att**2))
 
+        return scale_factor
+
+    @staticmethod
+    def scaled_dend_out(dend_out):
+        scale_factor, x_j_hat = dend_out
+        return scale_factor * x_j_hat
+
+
+class TwoDimLayer4:
+
+    def __init__(self, t_rc, t_ref, t_psc, c_spacing, j, i, m,
+                 x_j_hat_node, sf_node, s_node,
+                 valid_sf=None, n_dendrites=50):
+        """
+
+        :param t_rc:
+        :param t_ref:
+        :param t_psc: post synaptic time constant
+        :param c_spacing: between column spacing
+        :param j: position of connected column in previous layer
+        :param i: parent column position in c
+        :param m: max shift allowed in the column
+
+        :param x_j_hat_node: Nengo node/ensemble of connected column in previous layer
+        :param sf_node: Nengo node/ensemble of current layer subsampling factor
+        :param s_node: Nengo node/ensemble of relative shift at current level
+
+        Optimization parameters
+        :param valid_sf: list of valid subsampling factors. Default = [1, 1.5, 2]
+        :param n_dendrites: Number of dendrites for each neuron in L4 soma. Default=50
+
+        :return:
+        """
+        self.j = j
+        self.n_dendrites = n_dendrites
+
+        if valid_sf is None:
+            valid_sf = [1, 1.5, 2]
+
+        # Populations --------------------------------------------------------------
+
+        # Dendrites Routing
+        # d[0] = mu_ix = sf * ix + sx,
+        # d[1] = mu_iy = sf * iy + sy,
+        # d[2]= sigma_att =  sf * column_spacing / 2.35
+        max_sf = max(valid_sf)
+        max_mu_x = max_sf * i[0] + m
+        max_mu_y = max_sf * i[1] + m
+        max_sigma = max_sf * c_spacing
+
+        self.dend_rout = nengo.Ensemble(
+            3000,  # population size
+            3,    # dimensionality
+            max_rates=nengo.dists.Uniform(100, 200),
+            neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
+            # neuron_type=nengo.Direct(),
+            label='dend rout',
+            radius=np.sqrt(max_mu_x**2 + max_mu_y**2 + max_sigma**2)
+        )
+
+        # Dendrites
+        # d[0] = scaling factor
+        # d[1]= input from previous level connected column
+        self.dend = nengo.Ensemble(
+            300,
+            2,
+            max_rates=nengo.dists.Uniform(100, 200),
+            neuron_type=nengo.LIFRate(),  # Dendrites do not spike
+            # neuron_type=nengo.Direct(),
+            radius=np.sqrt(2),
+            label='dendrites'
+        )
+
+        # Soma
+        self.soma = nengo.Ensemble(
+            self.n_dendrites,  # population size
+            1,  # dimensionality
+            max_rates=nengo.dists.Uniform(100, 200),
+            neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
+            label='soma',
+        )
+
+        # Connections ---------------------------------------------------------------------
+        nengo.Connection(sf_node, self.dend_rout[0], transform=i[0], synapse=t_psc)
+        nengo.Connection(sf_node, self.dend_rout[1], transform=i[1], synapse=t_psc)
+        nengo.Connection(sf_node, self.dend_rout[2], transform=(c_spacing / 2.35), synapse=t_psc)
+
+        nengo.Connection(s_node[0], self.dend_rout[0], synapse=t_psc)
+        nengo.Connection(s_node[1], self.dend_rout[1], synapse=t_psc)
+
+        # Output of the routing function can take on a specifiable set of values.
+        # When solving for decoders, evaluate the function at points surrounding these values
+        # to increase representation accuracy around these points
+        sample_sf = np.random.choice(valid_sf, size=2000)
+        sample_m = np.random.choice([-m, 0, m], size=2000)
+
+        pnts_d0 = sample_sf[0: 1000] * i[0] + sample_m[0: 1000] + \
+            np.random.normal(loc=0, scale=0.1, size=1000)
+        pnts_d1 = sample_sf[0: 1000] * i[1] + sample_m[0: 1000] + \
+            np.random.normal(loc=0, scale=0.1, size=1000)
+        pnts_d2 = np.random.choice(valid_sf, size=1000) * c_spacing / 2.35 + \
+            np.random.normal(loc=0, scale=0.1, size=1000)
+
+        eval_points = np.vstack([pnts_d0, pnts_d1, pnts_d2]).T
+
+        nengo.Connection(self.dend_rout, self.dend[0], eval_points=eval_points,
+                         function=self.routing_function, synapse=t_psc)
+
+        nengo.Connection(x_j_hat_node, self.dend[1], synapse=t_psc)
+
+        nengo.Connection(self.dend, self.soma, synapse=t_psc,
+                         function=self.scaled_dend_out)
+
+        # Probes --------------------------------------------------------------
+        self.dend_rout_p = nengo.Probe(self.dend_rout, synapse=0.1)
+        self.dend_p = nengo.Probe(self.dend, synapse=0.1)
+        self.soma_p = nengo.Probe(self.soma, synapse=0.1)
+
+    def routing_function(self, dend_out):
+        mu_ix, mu_iy, sigma_att = dend_out
+
+        scale_factor = 0
+
+        if sigma_att > 0:
+            scale_factor = np.exp(-((mu_ix - self.j[0])**2 + (mu_iy - self.j[1])**2) /
+                                  (2 * sigma_att**2))
         return scale_factor
 
     @staticmethod
