@@ -97,8 +97,7 @@ class Layer4:
 
         # Scale factors are also between 0, 1 so use another set of eval points to improve soma
         # representation
-        pnts_d0 = np.random.uniform(0, 1, size=1000) + \
-            np.random.normal(loc=0, scale=0.1, size=1000)
+        pnts_d0 = np.random.uniform(0, 1, size=1000)
         pnts_d1 = np.random.uniform(-1, 1, size=1000)
 
         eval_points2 = np.vstack([pnts_d0, pnts_d1]).T
@@ -112,7 +111,7 @@ class Layer4:
                          function=self.routing_function, synapse=t_psc)
         nengo.Connection(x_j_hat_node, self.dend[1], synapse=t_psc)
 
-        nengo.Connection(self.dend, self.soma, synapse=t_psc,  eval_points=eval_points2,
+        nengo.Connection(self.dend, self.soma, synapse=t_psc, #eval_points=eval_points2,
                          function=self.scaled_dend_out)
 
         # Probes --------------------------------------------------------------
