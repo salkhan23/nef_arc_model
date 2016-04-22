@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # Global Feedback Signals (from Pulvinar)
     A_len = 3 / 9.0
-    A_pos = 0.5
+    A_pos = 0.75
     A_theta = 0  # At highest level = 0, object representation is assumed centered
 
     # Printed out the expected routing parameters
@@ -327,18 +327,22 @@ if __name__ == '__main__':
     #
     # for c_idx, column in enumerate(level2_columns):
     #
-    #     ax2[c_idx].set_title("mu_i Level 2 Column at %0.2f" % column.i)
+    #     ax2[c_idx].set_title("Level 2 Column at %0.2f" % column.i)
     #
     #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         ax2[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="Dendrites at %0.2f" % l4.j)
+    #         # ax2[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="mu_i at %0.2f" % l4.j)
+    #         ax2[c_idx].plot(t, sim.data[l4.dend_p][:, 0], label="scale factor at %0.2f" % l4.j)
+    #         # ax2[c_idx].plot(t, sim.data[l4.soma_p], label="soma out %0.3f" % l4.j)
     #
     #     ax2[c_idx].legend()
     #
     # for c_idx, column in enumerate(level3_columns):
     #
-    #     ax3[c_idx].set_title("mu_i Level 3 Column at %0.2f" % column.i)
+    #     ax3[c_idx].set_title("Level 3 Column at %0.2f" % column.i)
     #
     #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         ax3[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="Dendrite at  %0.2f" % l4.j)
+    #         # ax3[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="mu_i at %0.2f" % l4.j)
+    #         ax3[c_idx].plot(t, sim.data[l4.dend_p][:, 0], label="scale factor at %0.2f" % l4.j)
+    #         # ax3[c_idx].plot(t, sim.data[l4.soma_p], label="soma out %0.3f" % l4.j)
     #
     #     ax3[c_idx].legend()
