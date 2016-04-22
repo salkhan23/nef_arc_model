@@ -37,8 +37,6 @@ class Layer4:
 
         self.j = j
         self.n_dendrites = n_dendrites
-        self.c_spacing = c_spacing
-        self.i = i
 
         if valid_sf is None:
             valid_sf = [1, 1.5, 2]
@@ -50,6 +48,7 @@ class Layer4:
         # d[1]= sigma_att =  sf * column_spacing / 2.35
         max_sf = max(valid_sf)
         max_mu = max_sf * i + m
+        max_sigma = max_sf * c_spacing / 2.35
 
         self.dend_rout = nengo.Ensemble(
             2000,  # population size
@@ -57,8 +56,8 @@ class Layer4:
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
             # neuron_type=nengo.Direct(),
-            label='dend rout',
-            radius=np.sqrt(max_mu**2 + (max_sf * c_spacing / 2.35)**2)
+            label='L4 dend rout',
+            radius=np.sqrt(max_mu**2 + max_sigma**2)
         )
 
         # Dendrites
@@ -70,7 +69,7 @@ class Layer4:
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.Sigmoid(),  # Dendrites do not spike
             radius=np.sqrt(2),
-            label='dendrites'
+            label='L4 dendrites'
         )
 
         # Soma
@@ -79,7 +78,7 @@ class Layer4:
             1,  # dimensionality
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
-            label='soma',
+            label='L4 soma',
         )
 
         # Output of the routing function can take on a specifiable set of values.
@@ -183,7 +182,7 @@ class TwoDimLayer4:
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
             # neuron_type=nengo.Direct(),
-            label='dend rout',
+            label='L4 dend rout',
             radius=np.sqrt(max_mu_x**2 + max_mu_y**2 + max_sigma**2)
         )
 
@@ -197,7 +196,7 @@ class TwoDimLayer4:
             neuron_type=nengo.LIFRate(),  # Dendrites do not spike
             # neuron_type=nengo.Direct(),
             radius=np.sqrt(2),
-            label='dendrites'
+            label='L4 dendrites'
         )
 
         # Soma
@@ -206,7 +205,7 @@ class TwoDimLayer4:
             1,  # dimensionality
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
-            label='soma',
+            label='L4 soma',
         )
 
         # Connections ---------------------------------------------------------------------
