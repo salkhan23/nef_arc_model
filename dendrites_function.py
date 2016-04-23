@@ -177,7 +177,7 @@ class TwoDimLayer4:
         max_sigma = max_sf * c_spacing
 
         self.dend_rout = nengo.Ensemble(
-            3000,  # population size
+            4000,  # population size
             3,    # dimensionality
             max_rates=nengo.dists.Uniform(100, 200),
             neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
