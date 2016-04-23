@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This Files tests the 2 input dendrite function
+This Files tests the 2 input dendrite function/model
 """
 
 import numpy as np
@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 import nengo
 
 import dendrites_function as dend_func
+import dendrites_model as dend
 
 reload(dend_func)
+reload(dend)
 
 if __name__ == '__main__':
     plt.ion()
@@ -22,9 +24,9 @@ if __name__ == '__main__':
     column_m = 1 * between_column_dist
     valid_sf_values_for_level = [1, 1.5, 2]
 
-    # # -----------------------------------------------------------------------------
-    # # Single 2D Layer 4 model
-    # # -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
+    # Single 2D Layer 4 model
+    # -----------------------------------------------------------------------------
     # # Build the Network
     # model = nengo.Network(label='Single Layer 4 (2D)')
     #
@@ -41,7 +43,7 @@ if __name__ == '__main__':
     #     stim_s = nengo.Node(rel_shift)
     #     stim_x_j_hat = nengo.Node(prev_level_column_out)
     #
-    #     l4 = dend_func.TwoDimLayer4(
+    #     l4 = dend.TwoDimLayer4(
     #         t_rc=tau_rc,
     #         t_ref=tau_ref,
     #         t_psc=tau_psc,
@@ -117,7 +119,7 @@ if __name__ == '__main__':
 
         l4_arr = []
         for p_idx, pos in enumerate(prev_level_column_pos):
-            l4 = dend_func.TwoDimLayer4(
+            l4 = dend.TwoDimLayer4(
                 t_rc=tau_rc,
                 t_ref=tau_ref,
                 t_psc=tau_psc,
