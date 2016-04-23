@@ -37,8 +37,7 @@ class CorticalColumn:
             300,  # population size
             1,    # dimensionality
             max_rates=nengo.dists.Uniform(100, 200),
-            # neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
-            neuron_type=nengo.LIF(),
+            neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
             label='Layer 6 relative shift',
         )
 
@@ -47,8 +46,7 @@ class CorticalColumn:
             300,  # population size
             1,    # dimensionality
             max_rates=nengo.dists.Uniform(100, 200),
-            # neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
-            neuron_type=nengo.LIF(),
+            neuron_type=nengo.LIF(tau_ref=t_ref, tau_rc=t_rc),
             label='Layer 6 sampling factor',
             radius=max(valid_sf)
         )
@@ -89,8 +87,7 @@ class CorticalColumn:
                          function=self.l6_relative_shift, synapse=t_psc)
 
         # Size cannot be negative optimize the representation accuracy over non negative values
-        eval_points = np.random.uniform(0, 1, size=(1000, 1)) + \
-            np.random.normal(loc=0, scale=0.1)  # size cannot be negative
+        eval_points = np.random.uniform(0, 1, size=(1000, 1))
         nengo.Connection(l5_size_node, self.l6_sf, eval_points=eval_points,
                          function=self.l6_sampling_factor, synapse=t_psc)
 
