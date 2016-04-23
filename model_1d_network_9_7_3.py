@@ -102,7 +102,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Constructing Level 2")
     level2_column_pos_arr = [-0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75]
-    level2_m = (level2_a - 1) / 2.0 * between_column_dist
+    level2_m = (level2_a - 1) / 2.0 * between_column_dist + level1_m
 
     with model:
         # Common to the Level ---------------------------------
@@ -126,13 +126,13 @@ if __name__ == '__main__':
         )
 
         # Columns in Level 2
-        max_shift_columns = level2_m / between_column_dist
-        idxs = np.arange(-max_shift_columns, max_shift_columns + 1)  # include end point
+        half_a = (level2_a - 1) / 2.0
+        prev_level_c_idxs = np.arange(-half_a, half_a + 1)  # include end point
 
         level2_columns = []
         for c_idx, c_pos in enumerate(level2_column_pos_arr):
-            prev_level_column_pos = c_pos + idxs * between_column_dist
-            prev_level_column_idxs = max_shift_columns + c_idx + idxs
+            prev_level_column_pos = c_pos + prev_level_c_idxs * between_column_dist
+            prev_level_column_idxs = half_a + c_idx + prev_level_c_idxs
 
             ff_in_prev_level = [level1[int(idx)] for idx in prev_level_column_idxs]
 
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Constructing Level 3")
     level3_column_pos_arr = [-0.25, 0, 0.25]
-    level3_m = (level3_a - 1) / 2.0 * between_column_dist
+    level3_m = (level3_a - 1) / 2.0 * between_column_dist + level2_m
 
     with model:
         # Layer 5 position - locally represents global position and theta at current level
@@ -181,13 +181,13 @@ if __name__ == '__main__':
         )
 
         # Columns in level 3
-        max_shift_columns = level3_m / between_column_dist
-        idxs = np.arange(-max_shift_columns, max_shift_columns + 1)  # include end point
+        half_a = (level3_a - 1) / 2.0
+        prev_level_c_idxs = np.arange(-half_a, half_a + 1)  # include end point
 
         level3_columns = []
         for c_idx, c_pos in enumerate(level3_column_pos_arr):
-            prev_level_column_pos = c_pos + idxs * between_column_dist
-            prev_level_column_idxs = max_shift_columns + c_idx + idxs
+            prev_level_column_pos = c_pos + prev_level_c_idxs * between_column_dist
+            prev_level_column_idxs = half_a + c_idx + prev_level_c_idxs
 
             ff_in_prev_level_d = \
                 [level2_columns[int(idx)].l2_3_output for idx in prev_level_column_idxs]
