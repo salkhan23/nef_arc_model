@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # Global Feedback Signals (from Pulvinar)
     A_len = 3 / 7.0
     A_pos = np.array([0.5, 0.5])
-    A_theta = np.array([0, 0]) # At highest level = 0, object representation is assumed centered
+    A_theta = np.array([0, 0])  # At highest level = 0, object representation is assumed centered
 
     # Printed out the expected routing parameters
     print("Routing Details Apos=%s, Alen=%0.2f  ---------------------------------"
@@ -93,11 +93,11 @@ if __name__ == '__main__':
         stim_g_theta = nengo.Node(A_theta)
 
         # Feed forward inputs
-        # Input to the model is a square in the top right corner and a diamond at the bottom left
+        # Input to the model is a Z in the top right corner and a diamond at the bottom left
         level1_column_inputs = np.array([
+            [0, 0, 0, 0, 1, 0, 1],
             [0, 0, 0, 0, 1, 1, 1],
-            [0, 0, 0, 0, 1, 1, 1],
-            [0, 0, 0, 0, 1, 1, 1],
+            [0, 0, 0, 0, 1, 0, 1],
             [0, 0, 0, 0, 0, 0, 0],
             [0, 1, 0, 0, 0, 0, 0],
             [1, 0, 1, 0, 0, 0, 0],
@@ -213,117 +213,56 @@ if __name__ == '__main__':
     sim.run(time_stop)
     t = sim.trange()
 
+    # Plot average outputs of each column at each level vs position --------------------
+    f, ax_arr = plt.subplots(1, 3)
 
-    # level 2 plots
-    f, ax_arr = plt.subplots()
-    for c_idx, column in enumerate(level2_columns):
-         ax_arr.plot(t, sim.data[level2_columns[c_idx].l2_3_output_p], label='L2 column %s' % column.i)
+    # Inputs
+    lev1_x_min = -level1_size[0]/2 + 1
+    lev1_x_max = level1_size[0]/2
+    lev1_y_min = -level1_size[1]/2 + 1
+    lev1_y_max = level1_size[1]/2
 
+    ax_arr[0].matshow(
+        level1_column_inputs.reshape(level1_size[0], level1_size[0]),
+        extent=[lev1_x_min, lev1_x_max, lev1_y_min, lev1_y_max],
+        cmap=plt.cm.coolwarm,
+        vmin=0, vmax=1,
+    )
+    ax_arr[0].set_title("Inputs to Level 1")
+    ax_arr[0].set_ylabel("Y")
+    ax_arr[0].set_xlabel("X")
 
+    # level 1
+    avg_level1_out = []
+    for probe in level1_pop_probes:
+        avg_level1_out.append(np.mean(sim.data[probe]))
 
-    #
-    # # Plot the outputs of each column vs its position -----------------------------------
-    # # f, ax_arr = plt.subplots(2, 1, sharex=True)
-    # f2, ax_arr2 = plt.subplots(2, 1, sharex=True)
-    #
-    # # level 2 plots
-    # for c_idx, column in enumerate(level2_columns):
-    #
-    #     # ax_arr[1].scatter(
-    #     #     level2_column_pos_arr[c_idx] * np.ones_like(sim.data[column.l2_3_output_p]),
-    #     #     sim.data[column.l2_3_output_p])
-    #
-    #     ax_arr2[1].plot(t, sim.data[level2_columns[c_idx].l2_3_output_p],
-    #                     label='L2 column %0.2f' % column.i)
-    #
-    # # level 1 plots
-    # for p_idx, probe in enumerate(level1_pop_probes):
-    #
-    #     # ax_arr[2].scatter(
-    #     #     level1_column_pos_arr[p_idx] * np.ones_like(sim.data[probe]),
-    #     #     sim.data[probe])
-    #
-    #     ax_arr2[2].plot(t, sim.data[probe], label='L1 column %0.2f' % level1_column_pos_arr[p_idx])
-    #
-    # for ii in np.arange(len(ax_arr2)):
-    #     # ax_arr[ii].set_ylim([-0.1, 1.1])
-    #     ax_arr2[ii].set_ylim([-0.1, 1.1])
-    #
-    #     # ax_arr[ii].set_title("Level %d" % (3-ii))
-    #     ax_arr2[ii].set_title("Level %d" % (2-ii))
-    #
-    #     ax_arr2[ii].legend()
+    avg_level1_out = np.array(avg_level1_out)
+    im = ax_arr[1].matshow(
+        avg_level1_out.reshape(level1_size[0], level1_size[0]),
+        extent=[lev1_x_min, lev1_x_max, lev1_y_min, lev1_y_max],
+        cmap=plt.cm.coolwarm,
+        vmin=0, vmax=1,
+    )
+    ax_arr[1].set_title("Average output level 1")
+    ax_arr[1].set_xlabel("X")
 
-    # ax_arr[2].set_xlabel("column position")
-    ax_arr2[2].set_xlabel("Time(s)")
-    #
-    # f.suptitle("Column outputs, A_pos=%0.2f, A_len=%0.2f" % (A_pos, A_len), fontsize=16)
-    # f.suptitle("Column outputs, A_pos=%0.2f, A_len=%0.2f" % (A_pos, A_len), fontsize=16)
-    #
-    # # Plot scaled output of each input column (L4 outputs) ------------------------------
-    # plt.figure()
-    # plt.title("Scaled output (L4 outputs ) of each input column")
-    # ax2 = []
-    # ax3 = []
-    # for i in np.arange(7):
-    #     ax2.append(plt.subplot2grid((7, 2), (i, 1)))
-    #
-    # for i in np.arange(3):
-    #     ax3.append(plt.subplot2grid((7, 2), (2*i, 0), rowspan=2))
-    #
-    # for c_idx, column in enumerate(level2_columns):
-    #     ax2[c_idx].set_title("L2 column at %0.2f" % column.i)
-    #
-    #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         ax2[c_idx].plot(t, sim.data[l4.soma_p],
-    #                         label='L1 column at %0.2f'
-    #                               % column.prev_c_positions[l4_idx])
-    #     ax2[c_idx].legend()
-    #     ax2[c_idx].set_ylim([-0.1, 1.1])
-    #
-    # ax2[c_idx].set_xlabel("Time(s)")
-    #
-    # for c_idx, column in enumerate(level3_columns):
-    #     ax3[c_idx].set_title("L3 column at %0.2f" % column.i)
-    #
-    #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         ax3[c_idx].plot(t, sim.data[l4.soma_p],
-    #                         label='L2 column at %0.2f'
-    #                               % column.prev_c_positions[l4_idx])
-    #     ax3[c_idx].legend()
-    #     ax3[c_idx].set_ylim([-0.1, 1.1])
-    #
-    # ax3[c_idx].set_xlabel("Time(s)")
+    # Level 2
+    avg_level2_out = []
+    for column in level2_columns:
+        avg_level2_out.append(np.mean(sim.data[column.l2_3_output_p]))
 
-    # # Plot mu_i for each column (L4 outputs) ------------------------------
-    # plt.figure()
-    # plt.title(r"$\mu_{i} \ focus\ for\ column$")
-    # ax2 = []
-    # ax3 = []
-    # for i in np.arange(7):
-    #     ax2.append(plt.subplot2grid((7, 2), (i, 1)))
-    #
-    # for i in np.arange(3):
-    #     ax3.append(plt.subplot2grid((7, 2), (2*i, 0), rowspan=2))
-    #
-    # for c_idx, column in enumerate(level2_columns):
-    #
-    #     ax2[c_idx].set_title("Level 2 Column at %0.2f" % column.i)
-    #
-    #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         # ax2[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="mu_i at %0.2f" % l4.j)
-    #         ax2[c_idx].plot(t, sim.data[l4.dend_p][:, 0], label="scale factor at %0.2f" % l4.j)
-    #         # ax2[c_idx].plot(t, sim.data[l4.soma_p], label="soma out %0.3f" % l4.j)
-    #
-    #     ax2[c_idx].legend()
-    #
-    # for c_idx, column in enumerate(level3_columns):
-    #
-    #     ax3[c_idx].set_title("Level 3 Column at %0.2f" % column.i)
-    #
-    #     for l4_idx, l4 in enumerate(column.l4_arr):
-    #         # ax3[c_idx].plot(t, sim.data[l4.dend_rout_p][:, 0], label="mu_i at %0.2f" % l4.j)
-    #         ax3[c_idx].plot(t, sim.data[l4.dend_p][:, 0], label="scale factor at %0.2f" % l4.j)
-    #         # ax3[c_idx].plot(t, sim.data[l4.soma_p], label="soma out %0.3f" % l4.j)
-    #
-    #     ax3[c_idx].legend()
+    avg_level2_out = np.array(avg_level2_out)
+    ax_arr[2].matshow(
+        avg_level2_out.reshape(level2_size[0], level2_size[0]),
+        extent=[-level2_size[0]/2 + 1, level2_size[0]/2,
+                -level2_size[1]/2 + 1, level2_size[1]/2],
+        cmap=plt.cm.coolwarm,
+        vmin=0, vmax=1,
+    )
+
+    ax_arr[2].set_title("Average output level 2")
+    ax_arr[2].set_xlabel("X")
+
+    cbar_ax = f.add_axes([0.15, 0.15, 0.7, 0.02])
+    f.colorbar(im, cax=cbar_ax, orientation='horizontal')
