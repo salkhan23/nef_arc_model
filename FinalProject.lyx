@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\bibpunct{(}{)}{,}{a}{,}{,}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -39,8 +42,8 @@
 \use_package stackrel 1
 \use_package stmaryrd 1
 \use_package undertilde 1
-\cite_engine basic
-\cite_engine_type default
+\cite_engine natbib
+\cite_engine_type numerical
 \biblio_style plain
 \use_bibtopic false
 \use_indices false
@@ -59,7 +62,7 @@
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation skip
-\defskip smallskip
+\defskip medskip
 \quotes_language english
 \papercolumns 1
 \papersides 1
@@ -74,7 +77,7 @@
 \begin_body
 
 \begin_layout Title
-Transform Invariant Object Representation in the Brain
+Shape and Position Invariant Object Representation in the Ventral Stream
 \end_layout
 
 \begin_layout Author
@@ -86,16 +89,16 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Visual processing in the brain proceeds along two pathways, the ventral
- 
+In the brain, visual processing is thought to proceed along two pathways:
+ the ventral 
 \emph on
 what
 \emph default
- pathway and the dorsal 
+ and the dorsal 
 \emph on
 where
 \emph default
- pathways
+ pathways 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "Goodale1992"
@@ -103,39 +106,51 @@ key "Goodale1992"
 \end_inset
 
 .
- The ventral visual pathway plays a critical role in the detection and recogniti
-on of objects.
- It is composed of at least 4 cortical areas V1, V2, V4 and the inferior
- temporal (IT) cortices that are ranged hierarchically.
- A prominent feature of the ventral stream is its ability to detect object
- regardless of the certain transformations object may be experiences in
- the natural viewing environments.
- How the brain actually does this remains a mystery in this paper we examine
- a model that proposes using attention to shift target objects objects to
- the central representation in the inferior temporal cortex.
- First we evaluate the model and reproduce the results on a 1d object, next
- we extend the model to include 2D visual field and use it to show how 
+ This division is based on functionality with the ventral pathway thought
+ to be responsible for the detection and recognition of objects and the
+ dorsal stream assumed to be responsible for determining their spatial attribute
+s.
+ Critical to the task of identifying objects is the ability to do so regardless
+ of their size and position in the visual scene.
+ How the brain achieves this is still a mystery.
+ In this paper we investigate the Attention Routing Circuit (ARC) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bobier2011,Bobier2014"
+
+\end_inset
+
+, a model that proposes feedback attention signals can be used to selectively
+ route feedforward visual information such that attended objects can be
+ represented centrally and size invariantly at the top level of the ventral
+ stream.
+ First we replicate the model and validate its functionality over a one
+ dimensional visual scene.
+ Next, we extend the model and show that the attention routing circult can
+ operate over a two dimensional visual scene.
 \end_layout
 
 \begin_layout Section
 System Description
 \end_layout
 
-\begin_layout Standard
-through a series of feedback signals selectively routing incoming feedforward
- visual signals a central representation of the object at the top level
-\end_layout
-
-\begin_layout Section
-Design Specification
-\end_layout
-
-\begin_layout Section
-Implementation
+\begin_layout Subsection
+Visual Ventral Stream
 \end_layout
 
 \begin_layout Subsection
-1D Model
+Cortical Columns
+\end_layout
+
+\begin_layout Subsection
+1D ARC model
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:1D-ARC-model"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -159,22 +174,31 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-1 Dimension ARC model.
+1D ARC model.
+ Each circle represents a cortical column.
+ Red columns show selective routing of an attended target 0.75 and with size
+ 3/9 
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:1-Dimension-ARC"
 
 \end_inset
 
+.
+ Inputs to the model were [0, 0, 0, 0, 0, 0, 1, 1, 1].
+ Routing details for the selective and non-selective case are given in table
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-1D-model"
 
+\end_inset
+
+.
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -306,7 +330,7 @@ Level 3
 \begin_inset Text
 
 \begin_layout Plain Layout
--
+1
 \end_layout
 
 \end_inset
@@ -367,7 +391,7 @@ Level 3
 \begin_inset Text
 
 \begin_layout Plain Layout
-0.5
+0.75
 \end_layout
 
 \end_inset
@@ -475,12 +499,23 @@ reference "fig:1-Dimension-ARC"
 
 .
  Level size is the number of cortical columns at that level.
- a is a function of the receptive field size and is equal to the number
- of afferent connections.
- m is a calculated parmeter and is the maximum shift target representation
- can move at that level.
- At the lowest level of the network no shifting is allowed and m for level
- 1 is set to 0.
+ 
+\begin_inset Formula $a_{L}$
+\end_inset
+
+ is a function of the receptive field size and is equal to the number of
+ afferent connections.
+ 
+\begin_inset Formula $m_{L}$
+\end_inset
+
+ is a calculated parmeter and is the maximum shift the local representation
+ of an attended target can move at that level.
+ At the lowest level no shifting is allowed and 
+\begin_inset Formula $a_{1}$
+\end_inset
+
+ is set to 1 such that the maximum shift is zero.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -499,6 +534,379 @@ name "tab:Settings-for-1D-network"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1-Dimension-ARC"
+
+\end_inset
+
+ shows the architecture of an example 1D ARC model and table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Settings-for-1D-network"
+
+\end_inset
+
+ specifies its parameters.
+ Each levels corresponds to a separate cortex.
+ The model is a scaled down version of the ventral pathway with fewer levels
+ and columns at each level.
+ Processing in a larger model would be identical and we scale down the model
+ to allow efficient simulation.
+ Each circle corresponds to a single cortical column.
+ The model has 3 levels and the size of each level, 
+\begin_inset Formula $size_{L}$
+\end_inset
+
+, is equal to the number of component columns.
+ Each column is connected to multiple columns in the previous level.
+ 
+\begin_inset Formula $a_{L}$
+\end_inset
+
+ is the number of afferent connections from the previous layer into a single
+ column and is constant across a level.
+ Each level tries to shift and scale its local representation of the attended
+ object towards the center and such that it will fit within the top level
+ of the model.
+ The maximum shift allowed at each level is fixed and is a function of 
+\begin_inset Formula $a_{L}$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+m_{L}=\frac{(a_{L}-1)}{2}+m_{L-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Across the model a fixed spacing between cortical columns, 
+\begin_inset Formula $c_{spacing}$
+\end_inset
+
+ is assumed.
+ The maximum size of an attended object is equal to the number of columns
+ in the lowest level
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+size_{max}=size_{1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a given architecture, these parameters are fixed and are assumed to
+ be known across the model.
+\end_layout
+
+\begin_layout Standard
+In the default state, with no feedback signals, the complete visual scene
+ is represented at the top level.
+ As there are fewer columns at the top level, signals from multiple lower
+ level columns need to be combined.
+ This is achieved by connecting each column to multiple columns in the previous
+ layer and computing a weighted average over its inputs.
+ This results in a low frequency blurred representation of the visual scene
+ at the top level.
+ The removal of high frequency components makes detailed object detection
+ difficult but allows for the rapid detection of global features of the
+ visual scene, consistent with what has been observed in the literature
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Navon1977"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Selective routing starts with the Pulivar sending coarse information about
+ the attended target to the top level of the model.
+ Feedback is composed of two signals, (1) 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+, the center of mass of the attended target in terms of level 1 columns
+ and (2) 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ the number of level 1 columns spanned by the target.
+ Feedback to lower layers contains an additional signal, (3) 
+\begin_inset Formula $\theta_{curr}$
+\end_inset
+
+, the location of the objects center of mass at the current level.
+ At the top level, an object centered representation is assumed and 
+\begin_inset Formula $\theta_{curr}$
+\end_inset
+
+ is set to zero.
+\end_layout
+
+\begin_layout Standard
+At each level, columns need to determine how to manipulate weights over
+ their feed forward visual inputs such that the attended object can fit
+ centrally within the columns of the top level.
+ This is found by first calculating a subsampling factor:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+sf_{L}=\frac{min(max(A_{len}\times size_{max},\,size_{L}),\,size_{L-1})-1}{size_{L}-1}\label{eq:sf}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Large 
+\begin_inset Formula $sf$
+\end_inset
+
+ values correspond to lower scaling on previous level columns and allow
+ the column to combine signals from multiple feedforward inputs.
+ Typically these are used in the default non-selective case and when the
+ length of the target object is larger than the number top level columns.
+ An sf of one allows the column to focus on one particular column in the
+ previous layer.
+ Thereby allowing it to selectively route inputs from that column while
+ ignoring inputs from others.
+ In equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:sf"
+
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ is multiplied with 
+\begin_inset Formula $size_{max}$
+\end_inset
+
+ so that level sizes and 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ are in the same units.
+ Compared to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bobier2011"
+
+\end_inset
+
+ our definition of 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ is normalized to the 
+\begin_inset Formula $max_{size}$
+\end_inset
+
+.
+ This allows for easier modeling of 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+ and is functionally identical.
+ 
+\end_layout
+
+\begin_layout Standard
+Next, each column needs to determine the targets location in the previous
+ level 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\theta_{prev}=\left\{ \begin{array}{llll}
+0 &  &  & \mbox{if }\bigl|A_{pos}\bigr|\leq m_{L-1}\\
+A_{pos}-sign(A_{pos})m_{L-1} &  &  & \mbox{otherwise}
+\end{array}\right.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Compared to 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "Bobier2011"
+
+\end_inset
+
+, we use the maximum allowed shift at the
+\emph on
+ previous level
+\emph default
+ to determine 
+\begin_inset Formula $\theta_{prev}$
+\end_inset
+
+.
+ As the shifting between the previous level and the current level cannot
+ be involved in determining the location of the object in the previous level.
+\end_layout
+
+\begin_layout Standard
+Next the relative shift between of the objects representation in the previous
+ level and in the current level is determined
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s=\theta_{prev}-\theta_{curr}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Scaling of feed forward visual input is modeled using a gaussian function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(\mu_{i},\,\,j)=\exp\left(\frac{-(\mu_{i}-j)^{2}}{2\sigma_{att}^{2}}\right)\label{eq:routing-function}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $j$
+\end_inset
+
+ is the position of a connected column in the previous level, and 
+\begin_inset Formula $i$
+\end_inset
+
+ is the position of the column in the current level.
+ 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+ is the center of focus of column 
+\begin_inset Formula $i$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{att}$
+\end_inset
+
+ is a spread parameter that determines the amount of attenuation to apply
+ to columns away from the central focus of column 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ In the rest of the paper equation 6 is referred to as the routing function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{i}=sf\times i+s
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma_{att}=\frac{sf\times c_{spacing}}{2.35}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The output of column 
+\begin_inset Formula $i$
+\end_inset
+
+ is given by:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\sum_{j}x_{j}\times f\left(\mu_{i},j\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+ is the input from column at position 
+\begin_inset Formula $j$
+\end_inset
+
+ in the previous layer.
+\end_layout
+
+\begin_layout Standard
+Routing details for the 1D ARC model shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1-Dimension-ARC"
+
+\end_inset
+
+ in default and selective states are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-1D-model"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -904,17 +1312,24 @@ Level 3
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Routing details for default (no attention) and selective routing for target
- located at 
+Routing details for the 1D ARC model shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1-Dimension-ARC"
+
+\end_inset
+
+ in default (no attention) and selective routing cases.
+ For selective routing attended target is located at 
 \begin_inset Formula $A_{pos}=0.75$
 \end_inset
 
- and 
+ and has size 
 \begin_inset Formula $A_{len}=3/9$
 \end_inset
 
 .
- Values of
+ Values of 
 \begin_inset Formula $\mu_{i}$
 \end_inset
 
@@ -941,23 +1356,10 @@ name "tab:Routing-details-for-1D-model"
 \end_layout
 
 \begin_layout Subsection
-Routing Functions
-\end_layout
-
-\begin_layout Standard
-Routing functions in the paper were slightly modified to allow correct functiona
-lity.
-\end_layout
-
-\begin_layout Standard
-Each level calculates its sampling factor
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-sf_{L}=\frac{min(max(A_{len}\times size_{max},\,size_{L}),\,size_{L-1})-1}{size_{L}-1}
-\]
+2D ARC model
+\begin_inset CommandInset label
+LatexCommand label
+name "sub:2D-ARC-model"
 
 \end_inset
 
@@ -965,38 +1367,129 @@ sf_{L}=\frac{min(max(A_{len}\times size_{max},\,size_{L}),\,size_{L-1})-1}{size_
 \end_layout
 
 \begin_layout Standard
-Because 
-\begin_inset Formula $A_{len}$
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/ARC_2D.eps
+
 \end_inset
 
- is normalized we scale it up to the number of columns such that level sizes
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+2D ARC model.
+ Each circle represents a cortical column.
+ Blue outlined columns in level 1 are connected to the centrally located
+ column in level 2 (also with a blue outline).
+ Each level 2 column is connected with 25 level 1 columns.
+ Red filled columns show columns that received inputs of 1 while unfilled
+ columns received no inputs.
+ In summary, the inputs to the system was a the letter H in the top right
+ corner and a diamond shape in the bottom left.
+ Routing details for the selective and non-selective case are given in table.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-ARC-model"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An example 2D ARC model is shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-ARC-model"
+
+\end_inset
+
+ and its settings are given in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Settings-for-2D-network"
+
+\end_inset
+
+.
+ The model consists of two levels with 49 level 1 columns and 9 level 2
+ columns.
+ Compared to the 1D model, all positions are 2 dimensional; 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+=
+\begin_inset Formula $\left(A_{pos_{x}},\,A_{pos_{y}}\right)$
+\end_inset
+
+ and column positions 
+\begin_inset Formula $i=\left(i_{x},i_{y}\right)$
+\end_inset
+
+.
+ To prevent selective attention routing from distorting internal representations
+ of attended objects, a single subsampling factor is used for both dimensions.
+ Hence the target length remains single dimensional but is now defined as
+ the largest number of columns spanned by the target in either the x or
+ y direction.
+ Similarly, 
+\begin_inset Formula $a_{L}$
+\end_inset
+
+ is defined as the largest number of afferent connections in either dimension.
+\end_layout
+
+\begin_layout Standard
+Much of the control calculations for the 2D ARC remain identical to the
+ 1D model.
+ Except, 
+\begin_inset Formula $\theta_{prev}$
+\end_inset
+
+, 
+\begin_inset Formula $s$
+\end_inset
+
  and 
-\begin_inset Formula $A_{len}$
+\begin_inset Formula $\mu_{i}$
 \end_inset
 
- are in the same units.
- Here 
-\begin_inset Formula $size_{max}$
-\end_inset
-
- is the number of columns in the lowest level and is fixed at network initializa
-tion.
+ are now all 2 dimensional.
+ Each dimension can be processed independently using the equations specified
+ in the previous section.
  
 \end_layout
 
 \begin_layout Standard
-Next the location of the center of mass of the target in the previous level
- is determined 
+Scaling of feedforward visual signals is done using a 2D gaussian
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\theta_{prev}=\left\{ \begin{array}{llll}
-0 &  &  & \mbox{if }\bigl|A_{pos}\bigr|<m_{L}\\
-A_{pos}-sign(A_{pos})m_{L-1} &  &  & \mbox{otherwise}
-\end{array}\right.
-\]
+\begin{equation}
+f(\mu_{i},\,\,j)=\exp\left(\frac{-\left((\mu_{ix}-j_{x})+(\mu_{iy}-j_{y})\right)^{2}}{2\sigma_{att}^{2}}\right)
+\end{equation}
 
 \end_inset
 
@@ -1004,170 +1497,1032 @@ A_{pos}-sign(A_{pos})m_{L-1} &  &  & \mbox{otherwise}
 \end_layout
 
 \begin_layout Standard
-here 
+Routing details for the 2D ARC model shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-ARC-model"
+
+\end_inset
+
+ in default and selective states are shown in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-2D-model"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Level 1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+level 2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $size_{L}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7x7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3x3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $a_{L}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
 \begin_inset Formula $m_{L}$
 \end_inset
 
- is the maximum shift allowed at level 
-\begin_inset Formula $L$
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{spacing}$
 \end_inset
 
- and is fixed for each level at network initialization.
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.25
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $size_{max}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Settings for network show in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-ARC-model"
+
+\end_inset
+
+.
+ Compared to the 1D model 
+\begin_inset Formula $a_{L}$
+\end_inset
+
+ is defined as the largest number of afferent connections in either x or
+ y dimension.
+ For this square layout of levels, 
+\begin_inset Formula $a_{2}$
+\end_inset
+
+= 5 and there are 
+\begin_inset Formula $a_{L}^{2}$
+\end_inset
+
+ connection with lower level columns.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Settings-for-2D-network"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="7" columns="3">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="6cm">
+<column alignment="center" valignment="top" width="6cm">
+<row>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Parameter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\size small
+Default Routing 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Formula $A_{pos}=(0,0)\,\,A_{len}=1$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\size small
+Selective Routing 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newline
+\end_layout
+
+\end_inset
+
+ (
+\begin_inset Formula $A_{pos}=(0.5,0.5),\,\,A_{len}=3/7$
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Level 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Level 2
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $sf$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\theta_{prev}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+(0.5, 0.5)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+(0.5, 0.5)
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Formula $\begin{bmatrix}(-0.75,0.75) & (0,0.75) & (0.75,0.75)\\
+(-0.75,0) & (0,0) & (0.75,0)\\
+(-0.75,-0.75) & (0,-0.75) & (0.75,-0.75)
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+\begin_inset Formula $\begin{bmatrix}(0.25,0.75) & (0.5,0.75) & (0.75,0.75)\\
+(0.25,0.5) & (0.5,0.5) & (0.75,0.5)\\
+(0.25,0.25) & (0.5,0.25) & (0.75,0.25)
+\end{bmatrix}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\sigma_{att}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.32
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.11
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Routing details for the 2D ARC model shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-ARC-model"
+
+\end_inset
+
+in default (no attention) and selective routing cases.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Routing-details-for-2D-model"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Design Specification
+\end_layout
+
+\begin_layout Standard
+The model is designed to follow the general architecture of the visual ventral
+ stream; cortex sizes decrease while receptive field sizes increase with
+ depth.
+ The model is also constrained to follow the general architecture and connection
+ types of laminar layers of cortical columns.
+ This is detailed in the implementation section.
  
-\begin_inset Formula $m$
+\end_layout
+
+\begin_layout Standard
+Unless state otherwise component neurons are leaky integrate and fire (LIF)
+ neurons with time constants 
+\begin_inset Formula $\tau_{rc}$
 \end_inset
 
- for the lowest level is set to zero as no shifting is allowed at this level.
+ = 0.02s and refractory time constants 
+\begin_inset Formula $\tau_{ref}$
+\end_inset
+
+ = 0.002.
+ The post synaptic time constant on connections was set to 
+\begin_inset Formula $\tau_{psc}$
+\end_inset
+
+=0.1s.
+ Their firing rates were distributed uniformly over (100, 200) Hz.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\[
-m_{L}=\frac{(a_{L}-1)}{2}
-\]
+The default population size of component ensembles was set to 300 neurons,
+ unless stated otherwise.
+ This is larger than the typical population size used by 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Bobier2014,Bobier2011"
 
 \end_inset
 
+.
+ However, we are mainly interested in demonstrating invariant representation
+ in the ventral stream and leave optimizing population sizes as future work.
+\end_layout
 
+\begin_layout Section
+Implementation
 \end_layout
 
 \begin_layout Standard
-Next the relative shift between of the objects representation in the previous
- level and in the current level is determined
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-s=\theta_{prev}-\theta_{curr}
-\]
+Spiking neuron models of the 1D and 2D ARC were implemented using the neural
+ engineering framework (NEF) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Eliasmith2003"
 
 \end_inset
 
+.
+ Implementation of control equations in sections 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:1D-ARC-model"
 
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sub:2D-ARC-model"
+
+\end_inset
+
+ were mapped to the laminar layers of cortical columns.
+ A model of a 1D cortical column is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-Cortical-Column"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
+Within a column, incoming external feedback signals 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+, and 
 \begin_inset Formula $\theta_{curr}$
 \end_inset
 
- is sent down from the layer above along with 
+ are pickup in layer 1 (L1) by apical dentrites of L5 neurons.
+ These global signals are locally represented by two populations of L5 neurons.
+ 
 \begin_inset Formula $A_{pos}$
 \end_inset
 
  and 
+\begin_inset Formula $\theta_{curr}$
+\end_inset
+
+ are encoded by a single 2D population while 
 \begin_inset Formula $A_{len}$
 \end_inset
 
- as the feeback input to each level.
- For the top most level, 
-\begin_inset Formula $\theta_{curr}=$
+ is encoded by a separate population as they are required to calculate the
+ relative shift, 
+\begin_inset Formula $s$
 \end_inset
 
-0 as we want the representation of the object to be centered at the top
- level (object centered view).
-\end_layout
-
-\begin_layout Standard
-A Gaussian shape routing function is used by to determine the central focus
- of each column.
- This is used to scale the inputs of afferent forward in coming signals.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\mu_{i}=sf\times i+s
-\]
-
+ and subsampling factor 
+\begin_inset Formula $sf$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-here i is the position of the column in the current layer.
-\end_layout
-
-\begin_layout Standard
-Additionally the spread of the routing function needs to be narrowed to
- allow it to focus on a single column so as to reproduce a high frequency
- representation of the object as opposed to a low frequency version.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\sigma_{att}=\frac{sf\times c_{spacing}}{2.35}
-\]
-
+ respectively.
+ The radius of the first population is set to 
+\begin_inset Formula $\sqrt{1^{2}+1^{2}}=\sqrt{2}$
 \end_inset
 
-
+ as both inputs have a maximum value of 1.
+ In the complete model, these local representations are common to all columns
+ at the same level and to simplify simulation, a common L5 is used across
+ a level.
 \end_layout
 
 \begin_layout Standard
-Here 
-\begin_inset Formula $c_{spacing}$
+L5 neurons project onto L6 neurons and the connections between them are
+ used to compute local control signals, 
+\begin_inset Formula $s$
 \end_inset
 
- is the distance between columns.
+ and 
+\begin_inset Formula $sf$
+\end_inset
+
+.
+ These are computed independently by each column.
+ We note that 
+\begin_inset Formula $sf$
+\end_inset
+
+ is also common across a level and can potentially be represented by a single
+ population but leave this as a future optimization.
+ L6 neurons send their outputs to L4 neurons.
 \end_layout
 
 \begin_layout Standard
-The routing function for each column is then given by
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-f(\mu_{i},\,\,j)=\exp\left(\frac{-(\mu_{i}-j)^{2}}{2\sigma_{att}^{2}}\right)
-\]
+L4 neurons also receive feedforward inputs from columns in the previously
+ level.
+ L4 neurons need to compute two functions.
+ First, they use feedback local control signals from L6 to compute scaling
+ terms for each connected previous level column.
+ Second, incoming feedforward signals in these columns are multiplied by
+ their respective scaling factors.
+ To map these onto a single laminar layer, the ARC proposes to use non-linear
+ dendrites to compute the routing function and use the connection between
+ the L4 dendrites and L4 soma to perform the scaling.
+ Additionally, all L4 neurons are connected to a single previous layer.
+ Consequently, there are multiple L4s in each column, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-Cortical-Column"
 
 \end_inset
 
-
+.
+ Mapped onto the biology, these represents different L4 neurons scaling
+ inputs from previous levels independently.
+ 
 \end_layout
 
 \begin_layout Standard
-where 
-\begin_inset Formula $j$
-\end_inset
-
- is the position of a cortical column column i is connected to in the previous
- layer.
-\end_layout
-
-\begin_layout Standard
-The feed forward output of each column 
-\begin_inset Formula $i$
-\end_inset
-
- is found by aggregating the input from the scaled outputs for all columns
- in its connected to in the previous layer
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-y_{i}=\sum_{j}x_{j}\times f\left(\mu_{i},j\right)
-\]
+In 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Bobier2011,Bobier2014"
 
 \end_inset
 
+, L4 dendrites were 3 dimensional representing 
+\begin_inset Formula $\mu_{i}$
+\end_inset
 
-\end_layout
+, 
+\begin_inset Formula $\sigma_{att}$
+\end_inset
 
-\begin_layout Standard
-where 
+, and 
 \begin_inset Formula $x_{j}$
 \end_inset
 
- is the feed forward input from column at position 
-\begin_inset Formula $j$
+ respectively.
+ In this project we are mostly interested in modeling invariant representation
+ of objects in the ventral stream and to simplify implementation we offload
+ the computation of the routing function to a separate population of L4
+ neurons.
+ We leave incorporating this population into L4 dendrites, a more biologically
+ plausible realization, as a future work item.
+ In our implementation, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Laminar-Layer-4"
+
 \end_inset
 
- in the previous layer.
+, 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $\sigma_{att}$
+\end_inset
+
+ were represented by a single 2D population, L4 dend rout.
+ Connections between dend rout and L4 dendrites were used to compute the
+ routing function.
+ L4 dendrites are also 2 dimensional and represent 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $f(\mu_{i},\,\,j)$
+\end_inset
+
+ and 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+
+\begin_inset Formula $x_{j}$
+\end_inset
+
+.
+ This leaves dendrites with the much easier task of multiplying the scaling
+ factor with the incoming feedforward signal.
+ This was done on the connection between L4 dendrites and L4 soma.
+\end_layout
+
+\begin_layout Standard
+The radius of the L4 dend rout population was set to 
+\begin_inset Formula $\sqrt{\mu_{i_{max}}^{2}+\sigma_{att_{max}}^{2}}$
+\end_inset
+
+, where 
+\begin_inset Formula $\mu_{i_{max}}^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{att_{max}}^{2}$
+\end_inset
+
+ are the maximum values of these parameters across the network.
+ Theoretically, these can be further optimized by considering maximums at
+ each level separately, but to keep cortical columns generic across levels
+ we use network-wide values.
+ To improve the representational accuracy of this population we set its
+ population size to 2000 neurons.
+ Additionally, noting that both 
+\begin_inset Formula $sf$
+\end_inset
+
+ and 
+\begin_inset Formula $s$
+\end_inset
+
+ can take on a limited set of values, we modify the decoders of this population
+ to focus around these points rather than having them evenly distributed
+ across the whole range.
+ This was done by first constructing a set of points randomly chosen from
+ legitimate values of 
+\begin_inset Formula $sf$
+\end_inset
+
+ and 
+\begin_inset Formula $s$
+\end_inset
+
+ and adding gaussian noise with variance of 0.1 to them.
+ These were then explicitly set as evaluation points on the connection performin
+g the routing function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/coritcal_column_model.png
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+1D Cortical Column Model.
+ Here 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+ is encoded by stim_g_pos, 
+\begin_inset Formula $\theta_{curr}$
+\end_inset
+
+ by stim_theta_curr, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ by stim_g_len and the feedforward inputs from columns in the previous layer
+ by stim_x_j_hat.
+ This cortical column is connected to 3 columns in the previous level and
+ has 3 layer 4s.
+ Each layer 4 is represented by three 3 populations, dend_rout, dendrites
+ and the soma.
+ Each dendrites population is actually an ensemble array where each ensemble
+ represents dendrites of a neuron in the soma population.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-Cortical-Column"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L4 dendrites were model using an ensemble array with neurons in each ensemble
+ representing terminal dendritic branches of a single neuron in the soma,
+ see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Laminar-Layer-4"
+
+\end_inset
+
+.
+ As component ensembles represent dendritic branches of a neuron, each ensemble
+ needs to be directly connected to a single neuron in the L4 soma population.
+ Additionally, since dendrites do not spike, sigmoidal neurons were used
+ in their populations.
+ The radius of each component ensemble was also set to 
+\begin_inset Formula $\sqrt{2}.$
+\end_inset
+
+ Each ensemble had a population size of 300 neurons and the number of ensembles
+ was set to 50.
+ This was also the size of the L4 soma population.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1193,7 +2548,271 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Laminar Layer 4 Model with 10 dendrites per neuron in layer 4.
+Laminar Layer 4 model with 10 dendrites per L4 soma neuron.
+ L4 dendrites are modeled using an ensemble array.
+ In the actual model, the number of dendrites was set to 50.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Laminar-Layer-4"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Neurons in L2/3 combine inputs from all L4 somas in the column and send
+ a feedforward output, 
+\begin_inset Formula $y_{i},$
+\end_inset
+
+ to any connected column in the level above.
+ The radius of this population was set to one.
+ This ensures that in the case when lower scaling of multiple columns is
+ low (for example, the default non-selective case), L2/3 output will saturate
+ and feed forward input to column in the next level remains within the expected
+ range of (-1, 1).
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-Cortical-Column"
+
+\end_inset
+
+ shows a model of a 2D cortical column.
+ Functionality and the mapping to laminar layers remains the same however
+ to accommodate 2D position signals the dimensionality of some component
+ ensembles and the connections between them both increase.
+ L5 Pos ensemble is now 4D representing 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $A_{pos_{x}}$
+\end_inset
+
+, 
+\begin_inset Formula $A_{pos_{y}}$
+\end_inset
+
+,
+\begin_inset Formula $\theta_{curr_{x}}$
+\end_inset
+
+and 
+\begin_inset Formula $\theta_{curr_{y}}$
+\end_inset
+
+respectively .
+ The radius of this population was inceased to 
+\begin_inset Formula $\sqrt{4}$
+\end_inset
+
+ and the population size was increased to 900 neurons.
+ The L6 Shift ensemble is now 2D with each dimension representing the shift
+ in x and y directions separately.
+ The dimensionality of the L4 Dend Rout ensemble also increased and represents
+ 
+\begin_inset Formula $\mu_{i_{x}}$
+\end_inset
+
+, 
+\begin_inset Formula $\mu_{i_{y}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{att}$
+\end_inset
+
+ respectively.
+ An increase in the radius of this population was required and was done
+ based on the maximum values of component signals as previously explained.
+ The size of this population was increased to 4000 neurons.
+ The remaining populations were unaffected.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/cortical_column_2d.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+2D Cortical Column Model.
+ Compared to a 1D column, L5Pos population dimensionality increases from
+ 2D to 4D, L6 shift from 1D to 2D and the L4 dendrites from 2D to 3D.
+ Remaining populations remain the same.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-Cortical-Column"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Subsection
+1D Model
+\end_layout
+
+\begin_layout Standard
+For the 1D ARC model shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1-Dimension-ARC"
+
+\end_inset
+
+ an object with length 3 was placed at position 0.75.
+ With no feedback, a downsampled blurry version of the object is expected
+ at the top level.
+ The focus, 
+\begin_inset Formula $\mu_{i}$
+\end_inset
+
+, of each column in the network in given in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-1D-model"
+
+\end_inset
+
+.
+ At level 2, the right most column, at position 0.75, is focused on level
+ 1 column at 1 and should clearly see the signal from that column.
+ It should also see a scaled version of the output of level 1 column at
+ 0.75, because the sampling factor, 1.33, is greater then 1.
+ The level 2 column adjacent to this column, at 0.5, is focusing between
+ level 1 columns at 0.5 and 0.75 and should see the sum of scaled versions
+ of these two columns.
+ Its output is expected to be lower than that of level 2 column at 0.75.
+ Level 2 column at 0.25 is focused between level 1 columns at 0.25 and 0.5.
+ There is no signal in level 1 column at 0.25 and it is expected that the
+ output of this column should be lower than level 2 column at 0.5.
+ All other columns at level 2 are focused far away from the target and should
+ not see any signals.
+ 
+\end_layout
+
+\begin_layout Standard
+At level three, a much larger sampling factor of 3 is used.
+ In fact, from figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Routing-function-scaling"
+
+\end_inset
+
+, level 3 columns can see signals as far as 3 column away from its focus.
+ Level 3 column at 0.25 is focused on level 2 column at 0.75 and should clearly
+ see its signal, it will also see scaled contributions from level 2 columns
+ at 0.25 and 0.5 and is expected to have the largest output.
+ Level 3 column at position 0 focuses on position 0 and will see contributions
+ from level 2 columns at positions 0.25, 0.5 and 0.75.
+ However its output is expected to be lower than Level 3 column at 0.25.
+ Finally, Level 3 column at position 0.25 is focused on level 2 column at
+ position -0.75 and should not really see any signal.
+ The output of each column against its position for this non-selective routing
+ case is shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-results-non-selective"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/sf_vs_column_pos.eps
+	lyxscale 50
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Routing function showing how much signals from adjacent columns are attenuated
+ with distance away from the central focus of a column for diffrent subsampling
+ factors.
+ Here the routing function is focused on position 0, 
+\begin_inset Formula $\mu_{i}=0$
+\end_inset
+
+.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Routing-function-scaling"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1220,7 +2839,7 @@ status open
 \noindent
 \align center
 \begin_inset Graphics
-	filename Figures/coritcal_column_model.png
+	filename Figures/1d_model_results_default_pos_vs_out.eps
 	lyxscale 50
 	scale 30
 
@@ -1233,7 +2852,23 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Cortical Column Model
+1D ARC model results in default non-selective routing case (
+\begin_inset Formula $A_{pos}=0$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}=1$
+\end_inset
+
+).
+ Target object located at 0.75 and with a length of 3/9.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-results-non-selective"
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1251,18 +2886,559 @@ Cortical Column Model
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset bibtex
-LatexCommand bibtex
-bibfiles "/scratch/Salman/Documents/library"
-options "plain"
+When coarse feedback signals on the target location and position are provided
+ (
+\begin_inset Formula $A_{pos}=0.75$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}=3$
+\end_inset
+
+), the network reconfigures itself with a sampling factor of 1 for all levels
+ and with each column focusing on its rightmost connected column in the
+ previous level, see table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-1D-model"
+
+\end_inset
+
+.
+ With these setting, each column should pass through its inputs from its
+ focused column unattenuated.
+ Contributions from adjacent (scaling by 0.06) and next to adjacent (scaled
+ by < 0.01) columns should be minimal, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Routing-function-scaling"
+
+\end_inset
+
+.
+ Results for this case are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-results-selective"
+
+\end_inset
+
+.
+ Compared to the non-selective routing scenario, a clearer representation
+ of the target is seen at the top level.
+ However, compared to expected results, there is some attenuation of input
+ signals.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/1d_model_results_selective_pos_vs_out.eps
+	lyxscale 50
+	scale 30
 
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection*
-Dendrites Model
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+1D ARC model results in selective routing state (
+\begin_inset Formula $A_{pos}=0.75$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+=3/9).
+ Target object located at 0.75 and with a length of 3/9.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-results-selective"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To further investigate this attenuation and to get a much clearer picture
+ of the selective routing of input signals we looked at the outputs of component
+ layer 4s of each column, figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-results_selective_l4_out"
+
+\end_inset
+
+.
+ These show how each column is scaling inputs from connected columns in
+ the previous layer.
+ In this configuration, each column is expected to selectively pass through
+ the output of its rightmost connected column in the previous layer.
+ This can clearly be seen in the figure.
+ However, it appears that the signals from this column are also being attenuated
+ but to a much lesser extent compared to other input columns.
+ There are also noticeable contributions from signals from adjacent and
+ next to adjacent columns.
+ Ideally this should be zero.
+ We attribute both of these unexpected behaviors to the fact that neurons
+ are noisy.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/1d_model_results_selective_soma.eps
+	lyxscale 50
+	scale 27
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+L4 outputs of each column of the 1D ARC model results in selective routing
+ state (
+\begin_inset Formula $A_{pos}=0.75$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+=3/9).
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-results_selective_l4_out"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It was found that calculating the routing function was the most difficult
+ for neurons.
+ This was the case despite the fact that population size of these neurons
+ was much higher and the decoders of this population were optimzied to better
+ represent possible values.
+ Moreover, simply changing this population to calculate the function directly,
+ by changing the neuron type to direct mode, while keeping all our ensembles
+ intact, gives results much closer to expected, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-results-selective-ideal_dend_rout"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:1D-results-selective-l4-out-ideal-dend-rout"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/1d_model_results_selective_pos_vs_out_dend_rout_ideal.eps
+	lyxscale 50
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+1D ARC model results in selective routing state (
+\begin_inset Formula $A_{pos}=0.75$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+=3/9) with routing function calculated directly.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-results-selective-ideal_dend_rout"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/1d_model_results_default_soma_den_rout_ideal.eps
+	lyxscale 50
+	scale 27
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+L4 outputs of each column of the 1D ARC model results in selective routing
+ state (
+\begin_inset Formula $A_{pos}=0.75$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+=3/9) with routing function computed directly.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:1D-results-selective-l4-out-ideal-dend-rout"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+2D Model
+\end_layout
+
+\begin_layout Standard
+Inputs to the 2D ARC model consisted of a letter H in the top right corner
+ and a diamond shape in the lower left corner, see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-ARC-model"
+
+\end_inset
+
+.
+ In the default non-selective scenario, level 2 columns are configured with
+ a sampling factor of 3 and focused on level 1 columns that were 3 times
+ their own positions, table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-2D-model"
+
+\end_inset
+
+.
+ At this sampling factor each column receive inputs from columns within
+ a radius of 3 columns from its central focus.
+ For this case, blurry version of both objects are expected in the top level
+ of the model as can be seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-results-default"
+
+\end_inset
+
+.
+ Activity can be seen in the top right and botton left corner, however,
+ object identities cannot easily be determined.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+2D ARC model results in default non-selective routing case (
+\begin_inset Formula $A_{pos}=0$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}=1$
+\end_inset
+
+).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-results-default"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When coarse feedback signals about the location and the position of letter
+ H are provided to the network [
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+=(0.5, 0.5), 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+=3/7], the network reconfigures itself with a sampling factor of 1 and central
+ focuses given in table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Routing-details-for-2D-model"
+
+\end_inset
+
+.
+ With this sampling factor, each level 2 column selectively routes inputs
+ only from a single level 1 column.
+ The output of all columns plotted against their positions are shown in
+ figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-results-selective"
+
+\end_inset
+
+.
+ A some what clearer picture of the letter H emerges in the top level, however
+ since neurons are noisy, the results are less then expected.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/2d_model_results_selective_h.eps
+	lyxscale 50
+	scale 27
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+2D ARC model results in selective routing case with feedback (
+\begin_inset Formula $A_{pos}=(0.5,0.5)$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}=3/7$
+\end_inset
+
+).
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-results-selective"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As was the case for the 1D ARC model, the main source of error was the populatio
+n of neurons calculating the routing function.
+ In figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:2D-results-selective-dend_rout_ideal"
+
+\end_inset
+
+ we show the results when these neurons where bypassed using a direct connection
+ while the rest of the system remained intact.
+ Here, the attended object is clearly visible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/2d_model_results_selective_h_dendrites_ideal.eps
+	lyxscale 50
+	scale 27
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+2D ARC model results in selective routing case with feedback (
+\begin_inset Formula $A_{pos}=(0.5,0.5)$
+\end_inset
+
+, 
+\begin_inset Formula $A_{len}=3/7$
+\end_inset
+
+) with routing function computed directly.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:2D-results-selective-dend_rout_ideal"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "/scratch/Salman/Documents/library"
+options "plainnat"
+
+\end_inset
+
+ 
 \end_layout
 
 \end_body
