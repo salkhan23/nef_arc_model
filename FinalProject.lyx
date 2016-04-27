@@ -124,7 +124,7 @@ key "Bobier2011,Bobier2014"
  route feedforward visual information such that attended objects can be
  represented centrally and size invariantly at the top level of the ventral
  stream.
- First we replicate the model and validate its functionality over a one
+ First, we replicate the model and validate its functionality over a one
  dimensional visual scene.
  Next, we extend the model and show that the attention routing circult can
  operate over a two dimensional visual scene.
@@ -552,7 +552,7 @@ reference "tab:Settings-for-1D-network"
 \end_inset
 
  specifies its parameters.
- Each levels corresponds to a separate cortex.
+ Each level corresponds to a separate cortex.
  The model is a scaled down version of the ventral pathway with fewer levels
  and columns at each level.
  Processing in a larger model would be identical and we scale down the model
@@ -573,11 +573,11 @@ reference "tab:Settings-for-1D-network"
  Each level tries to shift and scale its local representation of the attended
  object towards the center and such that it will fit within the top level
  of the model.
- The maximum shift allowed at each level is fixed and is a function of 
+ The maximum shift allowed at each level is a function of 
 \begin_inset Formula $a_{L}$
 \end_inset
 
-
+ and is constant across the level
 \begin_inset Formula 
 \begin{equation}
 m_{L}=\frac{(a_{L}-1)}{2}+m_{L-1}
@@ -619,8 +619,8 @@ In the default state, with no feedback signals, the complete visual scene
  is represented at the top level.
  As there are fewer columns at the top level, signals from multiple lower
  level columns need to be combined.
- This is achieved by connecting each column to multiple columns in the previous
- layer and computing a weighted average over its inputs.
+ Each column is connected to multiple columns in the previous layer and
+ computes a weighted average over all its inputs.
  This results in a low frequency blurred representation of the visual scene
  at the top level.
  The removal of high frequency components makes detailed object detection
@@ -637,7 +637,7 @@ key "Navon1977"
 \end_layout
 
 \begin_layout Standard
-Selective routing starts with the Pulivar sending coarse information about
+Selective routing starts with the Pulivar sending coarse information regarding
  the attended target to the top level of the model.
  Feedback is composed of two signals, (1) 
 \begin_inset Formula $A_{pos}$
@@ -688,8 +688,12 @@ Large
  the column to combine signals from multiple feedforward inputs.
  Typically these are used in the default non-selective case and when the
  length of the target object is larger than the number top level columns.
- An sf of one allows the column to focus on one particular column in the
- previous layer.
+ Setting 
+\begin_inset Formula $sf$
+\end_inset
+
+ to one allows the column to focus on one particular column in the previous
+ layer.
  Thereby allowing it to selectively route inputs from that column while
  ignoring inputs from others.
  In equation 
@@ -707,11 +711,11 @@ reference "eq:sf"
 \begin_inset Formula $size_{max}$
 \end_inset
 
- so that level sizes and 
+ to keep level sizes and 
 \begin_inset Formula $A_{len}$
 \end_inset
 
- are in the same units.
+ in the same units.
  Compared to 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -884,7 +888,7 @@ where
 \begin_inset Formula $x_{j}$
 \end_inset
 
- is the input from column at position 
+ is the input from the column at position 
 \begin_inset Formula $j$
 \end_inset
 
@@ -892,14 +896,8 @@ where
 \end_layout
 
 \begin_layout Standard
-Routing details for the 1D ARC model shown in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:1-Dimension-ARC"
-
-\end_inset
-
- in default and selective states are shown in table 
+Routing details for this model in default and selective states are shown
+ in table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Routing-details-for-1D-model"
@@ -1450,9 +1448,8 @@ reference "tab:Settings-for-2D-network"
 .
  To prevent selective attention routing from distorting internal representations
  of attended objects, a single subsampling factor is used for both dimensions.
- Hence the target length remains single dimensional but is now defined as
- the largest number of columns spanned by the target in either the x or
- y direction.
+ Hence, target length remains single dimensional but is now defined as the
+ largest number of columns spanned by the target in either the x or y direction.
  Similarly, 
 \begin_inset Formula $a_{L}$
 \end_inset
@@ -2138,7 +2135,7 @@ The model is designed to follow the general architecture of the visual ventral
  stream; cortex sizes decrease while receptive field sizes increase with
  depth.
  The model is also constrained to follow the general architecture and connection
- types of laminar layers of cortical columns.
+ types of the laminar layers of cortical columns.
  This is detailed in the implementation section.
  
 \end_layout
@@ -2276,21 +2273,25 @@ L5 neurons project onto L6 neurons and the connections between them are
 
 .
  These are computed independently by each column.
- We note that 
+ We note that both 
 \begin_inset Formula $sf$
 \end_inset
 
- is also common across a level and can potentially be represented by a single
- population but leave this as a future optimization.
+ and 
+\begin_inset Formula $s$
+\end_inset
+
+ are also common across a level and can potentially be represented commonly
+ for a level, but leave this optimization for future work.
  L6 neurons send their outputs to L4 neurons.
 \end_layout
 
 \begin_layout Standard
-L4 neurons also receive feedforward inputs from columns in the previously
+L4 neurons also receive feedforward inputs from columns in the previous
  level.
  L4 neurons need to compute two functions.
- First, they use feedback local control signals from L6 to compute scaling
- terms for each connected previous level column.
+ First, they use L6 local feedback signals to compute scaling terms for
+ each connected previous level column.
  Second, incoming feedforward signals in these columns are multiplied by
  their respective scaling factors.
  To map these onto a single laminar layer, the ARC proposes to use non-linear
@@ -2487,7 +2488,7 @@ name "fig:1D-Cortical-Column"
 
 \end_inset
 
-.
+
 \end_layout
 
 \end_inset
@@ -2579,10 +2580,40 @@ Neurons in L2/3 combine inputs from all L4 somas in the column and send
 
  to any connected column in the level above.
  The radius of this population was set to one.
- This ensures that in the case when lower scaling of multiple columns is
- low (for example, the default non-selective case), L2/3 output will saturate
- and feed forward input to column in the next level remains within the expected
+ This ensures that in the case when scaling on input columns is low (for
+ example, the default non-selective case), L2/3 output will saturate and
+ feed forward input to column in the next level remains within the expected
  range of (-1, 1).
+\end_layout
+
+\begin_layout Standard
+Each level also sends feedback signals to the level below it.
+ The L5 position and L5 size populations send down 
+\begin_inset Formula $A_{pos}$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{len}$
+\end_inset
+
+ respectively.
+ The calculated 
+\begin_inset Formula $\theta_{prev}$
+\end_inset
+
+ also needs to be sent down as 
+\begin_inset Formula $\theta_{curr}$
+\end_inset
+
+ feedback for the level below.
+ This is done using two connections.
+ The first, from the second dimension of the L5 position population and
+ the second from L6 relative shift, 
+\begin_inset Formula $s$
+\end_inset
+
+, population from the column at position 0.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2650,7 +2681,7 @@ respectively .
  An increase in the radius of this population was required and was done
  based on the maximum values of component signals as previously explained.
  The size of this population was increased to 4000 neurons.
- The remaining populations were unaffected.
+ Remaining populations were unaffected.
 \end_layout
 
 \begin_layout Standard
@@ -3246,6 +3277,19 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/2d_model_results_default.eps
+	lyxscale 50
+	scale 27
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -3364,8 +3408,8 @@ name "fig:2D-results-selective"
 \end_layout
 
 \begin_layout Standard
-As was the case for the 1D ARC model, the main source of error was the populatio
-n of neurons calculating the routing function.
+As was the case for the 1D ARC model, the main source of error was the neurons
+ calculating the routing function.
  In figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -3428,6 +3472,104 @@ name "fig:2D-results-selective-dend_rout_ideal"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Routing Function
+\end_layout
+
+\begin_layout Standard
+In previous sections, for both the 1D and 2D ARC models, it was identified
+ that the routing function was the largest source of deviation from expected
+ behavior.
+ Here, we isolate the routing function implementation and investigate the
+ effect of population size on the representational accuracy of this function.
+ We use the 1D routing function and assume that results for the 2D ARC would
+ be similar.
+ Sampling factors and relative shifts were randomly chosen from the set
+ of possible values.
+ The output of the neuron population representing the scaling factor was
+ compared with the mathematically calculated expected value for various
+ population sizes.
+ Root mean square error (RMSE) versus the population size is shown in figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rmse_curve"
+
+\end_inset
+
+.
+ It can be seen that increasing population sizes does not significantly
+ improve representational accuracy.
+ Indicating that neurons are not very good at representing this function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Figures/error_graph.eps
+	lyxscale 50
+	scale 30
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect of population size on the 1D ARC routing function.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rmse_curve"
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Source Code
+\end_layout
+
+\begin_layout Standard
+The 1D and 2D ARC models are implemented in model_1d_network_9_7_3.py and
+ model_2d_network_7_3.py respectively.
+ Cortical column models are defined in cortical_column.py.
+ In dendrites_model.py we implement layer 4 of a cortical column.
+ The file dendrites_function.py file implements layer 4 but without using
+ dendrites.
+ Classes defined in these two files are interchangeable and allowed for
+ the faster development of the rest of the model.
+ Finally, performance analysis of the routing function was done in routing_func_
+analysis.
+ The complete code is attached and is also availale at https://github.com/salkhan
+23/nef_arc_model.
 \end_layout
 
 \begin_layout Standard
