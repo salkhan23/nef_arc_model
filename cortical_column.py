@@ -57,7 +57,7 @@ class CorticalColumn:
         # Layer 4 populations (one for each connected column)
         self.l4_arr = []
         for p_idx, pos in enumerate(prev_c_positions):
-            l4 = dend_func.Layer4(
+            l4 = dend.Layer4(
                 t_rc=t_rc,
                 t_ref=t_ref,
                 t_psc=t_psc,
@@ -161,7 +161,7 @@ class TwoDimCorticalColumn:
         # Layer 4 populations (one for each connected column)
         self.l4_arr = []
         for p_idx, pos in enumerate(prev_c_positions):
-            l4 = dend_func.TwoDimLayer4(
+            l4 = dend.TwoDimLayer4(
                 t_rc=t_rc,
                 t_ref=t_ref,
                 t_psc=t_psc,
